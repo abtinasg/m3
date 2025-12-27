@@ -17,6 +17,9 @@ from .config import CACHE_DIR, REQUEST_DELAY, USER_AGENT
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Offset to skip past the section header before searching for end pattern
+SECTION_START_OFFSET = 50
+
 
 def get_headers() -> dict:
     """Get HTTP headers with required User-Agent."""
@@ -161,9 +164,9 @@ def extract_item_section(
     # Find end of section
     end_pos = len(text)
     for pattern in item_end_patterns:
-        match = re.search(pattern, text_upper[start_pos + 50:])
+        match = re.search(pattern, text_upper[start_pos + SECTION_START_OFFSET:])
         if match:
-            end_pos = start_pos + 50 + match.start()
+            end_pos = start_pos + SECTION_START_OFFSET + match.start()
             break
 
     # Extract section

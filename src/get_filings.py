@@ -131,12 +131,17 @@ def extract_10k_filings(
 
     recent = submissions["filings"]["recent"]
 
-    # Get list lengths
-    n = len(recent.get("form", []))
+    # Extract lists once for efficiency
+    forms = recent.get("form", [])
+    filing_dates = recent.get("filingDate", [])
+    accession_numbers = recent.get("accessionNumber", [])
+    report_dates = recent.get("reportDate", [])
+    primary_documents = recent.get("primaryDocument", [])
+    n = len(forms)
 
     for i in range(n):
-        form = recent["form"][i] if i < len(recent.get("form", [])) else None
-        filing_date = recent["filingDate"][i] if i < len(recent.get("filingDate", [])) else None
+        form = forms[i] if i < len(forms) else None
+        filing_date = filing_dates[i] if i < len(filing_dates) else None
 
         # Filter for 10-K forms only
         if form != "10-K":
@@ -156,10 +161,10 @@ def extract_10k_filings(
         # Extract filing details
         filing = {
             "cik": cik,
-            "accessionNumber": recent["accessionNumber"][i] if i < len(recent.get("accessionNumber", [])) else None,
+            "accessionNumber": accession_numbers[i] if i < len(accession_numbers) else None,
             "filingDate": filing_date,
-            "reportDate": recent["reportDate"][i] if i < len(recent.get("reportDate", [])) else None,
-            "primaryDocument": recent["primaryDocument"][i] if i < len(recent.get("primaryDocument", [])) else None,
+            "reportDate": report_dates[i] if i < len(report_dates) else None,
+            "primaryDocument": primary_documents[i] if i < len(primary_documents) else None,
             "form": form,
         }
 

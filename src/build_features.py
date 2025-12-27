@@ -14,6 +14,13 @@ from .config import Z_DISTRESS_THRESHOLD, Z_SAFE_THRESHOLD
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Altman Z'' Score coefficients (four-factor model for non-manufacturing)
+# Reference: Altman, E.I. (1968) and subsequent modifications
+ZSCORE_COEF_X1 = 6.56  # Working Capital / Total Assets
+ZSCORE_COEF_X2 = 3.26  # Retained Earnings / Total Assets
+ZSCORE_COEF_X3 = 6.72  # EBIT / Total Assets
+ZSCORE_COEF_X4 = 1.05  # Equity / Total Liabilities
+
 
 def safe_divide(
     numerator: pd.Series,
@@ -212,10 +219,10 @@ def calculate_zscore_zpp(df: pd.DataFrame) -> pd.DataFrame:
 
     # Calculate Z'' Score
     df["zscore_zpp"] = (
-        6.56 * df["x1_wc_ta"].fillna(0)
-        + 3.26 * df["x2_re_ta"].fillna(0)
-        + 6.72 * df["x3_ebit_ta"].fillna(0)
-        + 1.05 * df["x4_eq_tl"].fillna(0)
+        ZSCORE_COEF_X1 * df["x1_wc_ta"].fillna(0)
+        + ZSCORE_COEF_X2 * df["x2_re_ta"].fillna(0)
+        + ZSCORE_COEF_X3 * df["x3_ebit_ta"].fillna(0)
+        + ZSCORE_COEF_X4 * df["x4_eq_tl"].fillna(0)
     )
 
     # Set to NaN if any component is missing

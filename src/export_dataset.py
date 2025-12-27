@@ -15,6 +15,9 @@ from .config import OUTPUT_DIR
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Maximum character length for text fields in CSV export
+CSV_TEXT_TRUNCATE_LENGTH = 1000
+
 # Define columns for final dataset
 IDENTIFIER_COLS = [
     "cik",
@@ -167,7 +170,7 @@ def export_to_csv(
     for col in TEXT_COLS:
         if col in export_df.columns:
             export_df[col] = export_df[col].apply(
-                lambda x: (x[:1000] + "...") if isinstance(x, str) and len(x) > 1000 else x
+                lambda x: (x[:CSV_TEXT_TRUNCATE_LENGTH] + "...") if isinstance(x, str) and len(x) > CSV_TEXT_TRUNCATE_LENGTH else x
             )
 
     export_df.to_csv(output_path, index=False)
